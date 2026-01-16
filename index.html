@@ -6,13 +6,28 @@
     <title>Volti Standard - Global Expert Terminal</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
-        :root { --primary: #0070f3; --dark: #0a0a0a; --green: #00ff00; --accent: #ff4d4d; --gray: #222; }
+        :root { 
+            --primary: #0070f3; 
+            --dark: #0a0a0a; 
+            --green: #00ff00; 
+            --accent: #ff4d4d; 
+            --yellow-flash: #FFD700; /* Volti 번개 색상 */
+            --esg-green: #28a745; /* ESG 환경 표시 색상 */
+        }
         body { font-family: 'Inter', sans-serif; background: #000; color: #eee; margin: 0; font-size: 13px; }
         
         /* 실시간 글로벌 시세 티커 */
         .vix-ticker { background: var(--dark); color: var(--green); padding: 10px 0; overflow: hidden; white-space: nowrap; font-family: monospace; border-bottom: 1px solid #333; }
         .ticker-content { display: inline-block; animation: ticker 50s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* 헤더 변경 */
+        header { background: #1a1a1a; padding: 20px 0; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; }
+        .logo-text { font-size: 28px; font-weight: bold; color: #fff; display: inline-flex; align-items: center; }
+        .logo-text .volti-flash { color: var(--yellow-flash); margin-right: 5px; font-size: 1.2em; } /* 번개 아이콘 */
+        .esg-slogan { font-size: 14px; color: var(--esg-green); margin-top: 5px; display: flex; align-items: center; justify-content: center; }
+        .esg-slogan .icon { margin-right: 5px; font-size: 1.1em; } /* ESG 아이콘 */
+
 
         /* 메인 레이아웃: 3컬럼으로 화면 꽉 채움 */
         .terminal-grid { display: grid; grid-template-columns: 320px 1fr 320px; gap: 15px; padding: 15px; height: calc(100vh - 100px); }
@@ -38,6 +53,16 @@
         .accordion { margin-bottom: 5px; border: 1px solid #222; }
         .acc-header { background: #1a1a1a; padding: 8px; cursor: pointer; display: flex; justify-content: space-between; font-size: 12px; }
         .acc-content { padding: 10px; display: none; font-size: 11px; color: #ccc; border-top: 1px solid #222; }
+
+        /* 실시간 세계 전력 단가 (주식창 스타일) */
+        .stock-panel { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 4px; margin-bottom: 15px; }
+        .stock-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dotted #222; }
+        .stock-item:last-child { border-bottom: none; }
+        .stock-name { font-weight: bold; color: #eee; }
+        .stock-price { font-family: monospace; font-size: 14px; }
+        .stock-change { font-size: 11px; margin-left: 10px; display: flex; align-items: center; }
+        .arrow-up { color: var(--green); }
+        .arrow-down { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -48,11 +73,31 @@
     </div>
 </div>
 
+<header>
+    <div class="logo-text">
+        <span class="volti-flash">⚡</span>Volti Standard Platform
+    </div>
+    <div class="esg-slogan">
+        <span class="icon">🌱</span> Driving Sustainable Energy Values
+    </div>
+</header>
+
 <div class="terminal-grid">
     <div class="panel">
         <h2>VT Analysis Engine</h2>
         <input type="text" id="address" placeholder="SEARCH LOCATION" readonly onclick="findAddress()">
         <input type="number" id="kwh" placeholder="POWER GEN (kWh)">
+        
+        <label style="font-size:11px; color:#aaa; margin-top:5px;">PRODUCTION METHOD</label>
+        <select id="production-method">
+            <option value="solar">SOLAR (태양광)</option>
+            <option value="wind">WIND (풍력)</option>
+            <option value="hydro">HYDRO (수력)</option>
+            <option value="geothermal">GEOTHERMAL (지열)</option>
+            <option value="etc">ETC (기타 재생)</option>
+        </select>
+
+        <label style="font-size:11px; color:#aaa; margin-top:5px;">PLANT AGE</label>
         <select id="months">
             <option value="1">NEW PLANT (< 1M)</option>
             <option value="12">STABLE (1Y)</option>
@@ -71,7 +116,7 @@
         <h2 style="margin-top:20px;">Enterprise Guide</h2>
         <input type="number" id="corp-rev" placeholder="ANNUAL REV (100M KRW)" oninput="calcCorp()">
         <div id="corp-res" style="padding:10px; color:var(--primary); font-weight:bold;"></div>
-        <p style="font-size:11px; color:#666;">*수출 기업을 위한 CBAM/RE100 대응 권장 매입량입니다.</p>
+        <p style="font-size:11px; color:#666;">*Target VT based on CBAM/RE100 compliance.</p>
     </div>
 
     <div class="panel">
@@ -95,6 +140,32 @@
     </div>
 
     <div class="panel">
+        <div class="stock-panel">
+            <h2>Global Power Prices</h2>
+            <div id="global-power-prices">
+                <div class="stock-item">
+                    <span class="stock-name">K-SMP</span>
+                    <span class="stock-price" id="k-smp-price">₩242.15</span>
+                    <span class="stock-change arrow-up">+2.1%</span>
+                </div>
+                <div class="stock-item">
+                    <span class="stock-name">D-EEX</span>
+                    <span class="stock-price" id="d-eex-price">€125.40</span>
+                    <span class="stock-change arrow-down">-1.5%</span>
+                </div>
+                <div class="stock-item">
+                    <span class="stock-name">JP-JEPX</span>
+                    <span class="stock-price" id="jp-jepx-price">¥15.20</span>
+                    <span class="stock-change arrow-up">+0.8%</span>
+                </div>
+                <div class="stock-item">
+                    <span class="stock-name">US-CAISO</span>
+                    <span class="stock-price" id="us-caiso-price">$78.90</span>
+                    <span class="stock-change arrow-down">-0.3%</span>
+                </div>
+            </div>
+        </div>
+
         <h2>Global Market Indicators</h2>
         
         <div class="accordion">
@@ -125,7 +196,7 @@
         </div>
         
         <div style="margin-top:auto; font-size:10px; color:#444; text-align:center;">
-            VOLTI TERMINAL V.2.1 | STABLE CONNECTION
+            VOLTI TERMINAL V.2.2 | STABLE CONNECTION
         </div>
     </div>
 </div>
@@ -133,10 +204,37 @@
 <script>
     // 1. 실시간 데이터 업데이트 (터미널 느낌)
     function updateTerminal() {
-        const smp = (240 + Math.random()*5).toFixed(2);
-        const ticker = document.getElementById('live-ticker');
-        ticker.innerText = `[MARKET] KR-SMP: ₩${smp} | US-WTI: $${(72+Math.random()).toFixed(2)} | Carbon: €${(64+Math.random()).toFixed(2)} | BTC: $${(42000+Math.random()*100).toLocaleString()} | [ALERT] HIGH DEMAND IN SEOUL | `;
+        const smp_val = (240 + Math.random()*5).toFixed(2);
+        const eex_val = (120 + Math.random()*10).toFixed(2);
+        const jepx_val = (14 + Math.random()*2).toFixed(2);
+        const caiso_val = (75 + Math.random()*10).toFixed(2);
+
+        document.getElementById('live-ticker').innerText = 
+            `[VIX LIVE] KR-SMP: ₩${smp_val} | EU-EEX: €${eex_val} | JP-JEPX: ¥${jepx_val} | US-CAISO: $${caiso_val} | Carbon: €${(64+Math.random()).toFixed(2)} | Loading Real-time Streams...`;
         
+        // 전력 단가 업데이트 (주식창 스타일)
+        function updateStockPrice(id, currentPrice, min, max, unit) {
+            const newPrice = (min + Math.random() * (max - min)).toFixed(2);
+            const change = ((newPrice - currentPrice) / currentPrice * 100).toFixed(1);
+            const element = document.getElementById(id);
+            const changeElement = element.nextElementSibling; // 다음 요소가 change span
+            
+            element.innerText = unit + newPrice;
+            changeElement.innerText = (change > 0 ? '+' : '') + change + '%';
+            changeElement.className = 'stock-change ' + (change > 0 ? 'arrow-up' : 'arrow-down');
+            return parseFloat(newPrice);
+        }
+
+        let currentKSMP = parseFloat(document.getElementById('k-smp-price').innerText.replace('₩', '')) || 242.15;
+        let currentDEEX = parseFloat(document.getElementById('d-eex-price').innerText.replace('€', '')) || 125.40;
+        let currentJEPX = parseFloat(document.getElementById('jp-jepx-price').innerText.replace('¥', '')) || 15.20;
+        let currentCAISO = parseFloat(document.getElementById('us-caiso-price').innerText.replace('$', '')) || 78.90;
+
+        currentKSMP = updateStockPrice('k-smp-price', currentKSMP, 230, 250, '₩');
+        currentDEEX = updateStockPrice('d-eex-price', currentDEEX, 110, 130, '€');
+        currentJEPX = updateStockPrice('jp-jepx-price', currentJEPX, 14, 16, '¥');
+        currentCAISO = updateStockPrice('us-caiso-price', currentCAISO, 70, 80, '$');
+
         document.getElementById('l-val').innerText = (1.2 + Math.random()*0.1).toFixed(3);
         document.getElementById('c-val').innerText = (1.1 + Math.random()*0.05).toFixed(3);
     }
@@ -145,8 +243,13 @@
     // 2. 가상의 히스토리 데이터 생성
     function initHistory() {
         const tbody = document.getElementById('history-tbody');
+        tbody.innerHTML = ''; // 기존 내용 초기화
         for(let i=0; i<15; i++) {
-            const row = `<tr><td>${23-i}:00</td><td>${(1.2 + Math.random()*0.2).toFixed(4)}</td><td>${(230 + Math.random()*20).toFixed(1)}</td><td>${(Math.random()*1000).toFixed(0)}</td></tr>`;
+            const time = `${(23-i).toString().padStart(2, '0')}:00`;
+            const vix = (1.2 + Math.random()*0.2).toFixed(4);
+            const smp = (230 + Math.random()*20).toFixed(1);
+            const vol = (Math.random()*1000).toFixed(0);
+            const row = `<tr><td>${time}</td><td>${vix}</td><td>${smp}</td><td>${vol}</td></tr>`;
             tbody.innerHTML += row;
         }
     }
@@ -154,8 +257,14 @@
 
     function toggleAcc(id) {
         const el = document.getElementById(id);
-        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        const header = el.previousElementSibling; // header는 content 이전 요소
+        const iconSpan = header.querySelector('span:last-child'); // header의 마지막 span이 아이콘
+
+        const isOpen = el.style.display === 'block';
+        el.style.display = isOpen ? 'none' : 'block';
+        iconSpan.innerText = isOpen ? '+' : '-'; // 아이콘 변경
     }
+
 
     function findAddress() { new daum.Postcode({ oncomplete: d => document.getElementById('address').value = d.address }).open(); }
 
@@ -163,21 +272,24 @@
         const kwh = document.getElementById('kwh').value;
         const addr = document.getElementById('address').value;
         const months = document.getElementById('months').value;
+        const method = document.getElementById('production-method').value; // 생산 방식 추가
         if(!addr || !kwh) return alert("INPUT DATA REQUIRED");
 
-        const res = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}&months=${months}`);
+        const res = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}&months=${months}&method=${method}`);
         const data = await res.json();
 
         document.getElementById('result-display').style.display = 'block';
         document.getElementById('res-vt').innerText = data.vt + " VT";
         document.getElementById('res-cash').innerText = "₩" + data.revenue;
-        document.getElementById('analysis-log').innerText = `ENGINE LOG: L=${data.log.L}, T=${data.log.T}, C=${data.log.C}, R=${data.log.R}, AGE=${data.log.Age}. Verified by Volti Standard.`;
+        document.getElementById('analysis-log').innerText = 
+            `ENGINE LOG: L=${data.log.L}, T=${data.log.T}, C=${data.log.C}, R=${data.log.R}, AGE=${data.log.Age}, METHOD=${data.log.Method}. Verified by Volti Standard.`;
     }
 
     function calcCorp() {
         const rev = document.getElementById('corp-rev').value;
         document.getElementById('corp-res').innerText = rev ? `TARGET: ${(rev * 150).toLocaleString()} VT / YR` : "";
     }
+    updateTerminal(); // 초기 로딩 시에도 실시간 데이터 업데이트
 </script>
 </body>
 </html>
