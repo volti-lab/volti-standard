@@ -30,15 +30,22 @@
                 }
             }).open();
         }
-        function calculateVT() {
+        async function calculateVT() {
             const kwh = document.getElementById('kwh').value;
             const addr = document.getElementById('address').value;
-            if(!addr || !kwh) { alert("주소와 발전량을 모두 입력해주세요!"); return; }
-            const vt = kwh * 1.2 * 1.5 * 1.1 * 1.0; // 임시 가중치 적용 [cite: 105]
+            
+            if(!addr || !kwh) {
+                alert("주소와 발전량을 모두 입력해주세요!");
+                return;
+            }
+
+            // 서버(API)에 계산 요청을 보냅니다
+            const response = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}`);
+            const data = await response.json();
+            
             const resultDiv = document.getElementById('result');
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `📍 <b>${addr}</b>의 가치<br>약 <b>${vt.toFixed(2)} VT</b>가 산출되었습니다!`;
-        }
+            resultDiv.innerHTML = `📍 <b>${addr}</b>의 가치<br>파이썬 엔진 계산 결과: 약 <b>${data.vt} VT</b>`;}
     </script>
 </body>
 </html>
