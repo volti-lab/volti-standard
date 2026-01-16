@@ -2,74 +2,99 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Volti Home - 수익 계산기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volti Standard - Global Energy Value Unit</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 40px; background-color: #f0f4f8; }
-        .card { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.05); max-width: 450px; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
-        button { width: 85%; padding: 12px; background-color: #0070f3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
-        #result { margin-top: 25px; padding: 20px; background: #eef6ff; border-radius: 15px; color: #0070f3; display: none; text-align: left; }
+        :root { --primary: #0070f3; --dark: #1a1a1a; --light: #f5f7f9; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--light); color: var(--dark); margin: 0; padding: 0; }
+        
+        /* 시세 전광판 */
+        .vix-ticker { background: var(--dark); color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; font-size: 0.9em; }
+        .ticker-content { display: inline-block; animation: ticker 30s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* 헤더 & 메인 섹션 */
+        header { padding: 40px 20px; text-align: center; background: white; border-bottom: 1px solid #eaeaea; }
+        .container { max-width: 1000px; margin: 40px auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; padding: 0 20px; }
+        
+        .card { background: white; padding: 30px; border-radius: 16px; border: 1px solid #eaeaea; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        h2 { margin-top: 0; font-size: 1.5em; border-left: 4px solid var(--primary); padding-left: 15px; }
+
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #0056b3; }
+
+        .price-list { list-style: none; padding: 0; }
+        .price-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #ddd; }
+        .up { color: #e63946; } .down { color: #0070f3; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>⚡ Volti 수익 계산기</h1>
-        <p>우리 집 태양광, VT로 팔면 얼마 더 벌까? [cite: 43]</p>
-        
-        <input type="text" id="address" placeholder="주소 찾기를 눌러주세요" readonly>
-        <button onclick="findAddress()">주소 찾기</button>
-        
-        <input type="number" id="kwh" placeholder="예상 발전량 (kWh)">
-        <button onclick="calculateVT()">VT 가치 및 수익 계산</button>
 
-        <div id="result"></div>
+<div class="vix-ticker">
+    <div class="ticker-content">
+        🌍 Volti Index (VIX): 🇰🇷 Seoul 1.22 VT/kWh (+0.02) | 🇩🇪 Berlin 1.84 VT/kWh (-0.05) | 🇺🇸 New York 1.45 VT/kWh (+0.11) | 🇯🇵 Tokyo 1.32 VT/kWh (+0.01) | 🇺🇸 California 1.95 VT/kWh (+0.08)
+    </div>
+</div>
+
+<header>
+    <h1>Volti Standard</h1>
+    <p>Measure what truly matters. Not all energy is equal. [cite: 95]</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>VT Calculator</h2>
+        <p>에너지의 질(Quality)을 수치화하여 수익을 확인하세요. [cite: 98]</p>
+        <input type="text" id="address" placeholder="발전소 주소를 검색하세요" readonly onclick="findAddress()">
+        <input type="number" id="kwh" placeholder="예상 발전량 (kWh)">
+        <button onclick="calculateVT()">분석 시작 및 수익 산출</button>
+        <div id="result" style="display:none; margin-top:20px; padding:20px; background:#f0f7ff; border-radius:12px;"></div>
     </div>
 
-    <script>
-        // 주소 찾기 팝업 실행 함수
-        function findAddress() {
-            new daum.Postcode({
-                oncomplete: function(data) {
-                    document.getElementById('address').value = data.address;
-                }
-            }).open();
-        }
+    <div class="card">
+        <h2>Global VIX Market</h2>
+        <ul class="price-list">
+            <li class="price-item"><span>🇰🇷 Seoul, KR</span><span class="up">₩250 / VT</span></li>
+            <li class="price-item"><span>🇩🇪 Berlin, DE</span><span class="up">€0.21 / VT</span></li>
+            <li class="price-item"><span>🇺🇸 California, US</span><span class="down">$0.19 / VT</span></li>
+            <li class="price-item"><span>🇦🇺 Sydney, AU</span><span>$0.24 / VT</span></li>
+        </ul>
+        <div style="margin-top:20px; font-size:0.9em; color:#666;">
+            <p>ℹ️ <b>VT = E × L × T × C × R</b> [cite: 105]</p>
+            <p>동일한 1kWh라도 언제 어디서 만드느냐에 따라 가치는 다릅니다. [cite: 101]</p>
+        </div>
+    </div>
+</div>
 
-        // 수익 계산 API 호출 함수
-        async function calculateVT() {
-            const kwh = document.getElementById('kwh').value;
-            const addr = document.getElementById('address').value;
-            
-            if(!addr || !kwh) {
-                alert("주소와 발전량을 모두 입력해주세요!");
-                return;
+<script>
+    function findAddress() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                document.getElementById('address').value = data.address;
             }
+        }).open();
+    }
 
-            try {
-                const response = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}`);
-                const data = await response.json();
-                
-                const resultDiv = document.getElementById('result');
-                resultDiv.style.display = 'block';
-                resultDiv.innerHTML = `
-                    <div style="border-bottom: 1px solid #bcd7ff; margin-bottom: 10px; padding-bottom: 10px;">
-                        📍 <b>${data.address}</b> 발전소 [cite: 16]
-                    </div>
-                    <div style="font-size: 1.1em;">
-                        인증 가치: <b>${data.vt} VT</b> [cite: 38]
-                    </div>
-                    <div style="font-size: 1.4em; color: #e63946; margin-top: 10px;">
-                        예상 추가 수익: <b>₩${data.revenue}</b> [cite: 43]
-                    </div>
-                    <p style="font-size: 0.8em; color: #666; margin-top: 10px;">
-                        *이 수치는 지역별 일조량과 송전 효율을 반영한 결과입니다. [cite: 105, 106]
-                    </p>
-                `;
-            } catch (error) {
-                alert("계산 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-            }
-        }
-    </script>
+    async function calculateVT() {
+        const kwh = document.getElementById('kwh').value;
+        const addr = document.getElementById('address').value;
+        if(!addr || !kwh) { alert("데이터를 입력해주세요!"); return; }
+
+        const response = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}`);
+        const data = await response.json();
+        
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <strong>분석 결과:</strong><br>
+            산출된 에너지 가치: <span style="font-size:1.5em; color:#0070f3;">${data.vt} VT</span><br>
+            예상 추가 수익: <span style="font-size:1.5em; color:#e63946;">₩${data.revenue}</span><br>
+            <small style="display:block; margin-top:10px;">*지역별 탄소 집약도 및 송전 효율 반영 완료 [cite: 106]</small>
+        `;
+    }
+</script>
+
 </body>
 </html>
