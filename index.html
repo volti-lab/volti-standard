@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volti Standard - Global Enterprise Platform</title>
+    <title>Volti Standard - Expert Dashboard</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
         :root { --primary: #0070f3; --dark: #1a1a1a; --light: #f5f7f9; --accent: #e63946; --corporate: #004a99; }
         body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--dark); margin: 0; line-height: 1.6; }
         
-        /* 1. 글로벌 시세 전광판 */
         .vix-ticker { background: var(--dark); color: #00ff00; padding: 12px 0; overflow: hidden; white-space: nowrap; font-family: monospace; position: sticky; top: 0; z-index: 100; }
         .ticker-content { display: inline-block; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -20,89 +19,129 @@
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); height: fit-content; }
         h2 { font-size: 1.3em; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 0; }
 
-        /* 2. 계산기 & 가이드 */
-        .guide-box { background: #fffbe6; padding: 15px; border-radius: 8px; border-left: 4px solid #ffe58f; font-size: 0.85em; margin-bottom: 15px; }
+        /* 확장형 아코디언 스타일 */
+        .details-box { margin-top: 10px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+        .details-header { background: #f8f9fa; padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 0.9em; }
+        .details-content { padding: 15px; display: none; background: white; font-size: 0.85em; border-top: 1px solid #eee; }
+        .toggle-btn { font-size: 1.2em; color: var(--primary); font-weight: bold; }
+
         input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 
-        /* 3. 계절 및 시세 테이블 */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-        .highlight { color: var(--accent); font-weight: bold; }
-
-        /* 4. 기업 구매 가이드 섹션 */
+        
         .corporate-section { max-width: 1160px; margin: 50px auto; padding: 40px 20px; background: white; border-radius: 16px; border: 2px solid var(--corporate); }
         .corp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 25px; }
         .corp-item { padding: 20px; background: #f0f7ff; border-radius: 10px; text-align: center; }
-        .corp-item h3 { color: var(--corporate); margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="vix-ticker">
     <div class="ticker-content">
-        [GLOBAL VIX KRW] 서울: ₩250 (+2.1) | 베를린: ₩315 (-1.4) | 뉴욕: ₩285 (+0.8) | 캘리포니아: ₩340 (+5.2) | 도쿄: ₩265 (+0.3) | [계절 가산점] 동절기(1월) 전 지역 VT 가중치 +15% 적용 중
+        [LIVE VIX] KR-SEOUL: ₩250.42 (+0.8%) | KR-JEJU: ₩285.15 (+1.2%) | DE-BERLIN: ₩314.90 (-0.4%) | US-CALI: ₩342.10 (+2.1%) | 현재 실시간 탄소배출계수(C) 및 기상 데이터(R) 동기화 중
     </div>
 </div>
 
 <header>
     <h1>Volti Standard Platform</h1>
-    <p>글로벌 에너지 가치 표준 - 개인의 발전량을 기업의 ESG 자산으로 연결합니다.</p>
+    <p>에너지 데이터의 가치를 정교하게 분석하여 증명합니다.</p>
 </header>
 
 <div class="main-container">
     <div class="card">
-        <h2>VT 분석 및 수익 계산</h2>
-        <div class="guide-box">
-            <b>💡 예상 발전량 확인</b>: 가정용(3kW)은 월 300~350kWh 수준입니다. 고지서의 '당월 발전량'을 입력하세요.
+        <h2>VT 가치 분석 엔진</h2>
+        <div class="details-box">
+            <div class="details-header" onclick="toggleDetails('calc-guide')">
+                <span>💡 예상 발전량 확인 및 입력 가이드</span>
+                <span class="toggle-btn" id="calc-guide-btn">+</span>
+            </div>
+            <div id="calc-guide" class="details-content">
+                • <b>가정용(3kW)</b>: 월 평균 300~360kWh 생산. (봄/가을 최대)<br>
+                • <b>산업용(100kW)</b>: 월 평균 10,000~12,000kWh 생산.<br>
+                • 고지서 혹은 인버터 모니터링 앱의 <b>'당월 누적 발전량'</b> 수치를 입력하세요.
+            </div>
         </div>
-        <input type="text" id="address" placeholder="주소 검색을 클릭하세요" readonly onclick="findAddress()">
+        
+        <input type="text" id="address" placeholder="발전소 주소 검색" readonly onclick="findAddress()">
         <button onclick="findAddress()" style="background:#666;">주소 찾기</button>
         <input type="number" id="kwh" placeholder="발전량 입력 (kWh)">
-        <button onclick="calculateVT()">실시간 가치 분석 실행</button>
+        <button onclick="calculateVT()">실시간 가치 정밀 분석</button>
         <div id="result" style="display:none; margin-top:20px; padding:15px; background:#eef6ff; border-radius:8px;"></div>
     </div>
 
     <div class="card">
-        <h2>Market Insight</h2>
+        <h2>시세 영향 항목 세분화</h2>
         
-        <p style="font-weight:bold; font-size:0.9em;">[계절별 가중치 가이드]</p>
-        <table>
-            <tr><th>기간</th><th>특징</th><th>가중치</th></tr>
-            <tr><td>3월-5월</td><td>최고 일사량</td><td>100% (기본)</td></tr>
-            <tr><td>6월-8월</td><td>냉방 수요 폭증</td><td class="highlight">125%</td></tr>
-            <tr><td>11월-2월</td><td>단일조 희소성</td><td class="highlight">150%</td></tr>
-        </table>
+        <div class="details-box">
+            <div class="details-header" onclick="toggleDetails('factor-1')">
+                <span>📍 Location & Grid (위치 및 계통 손실)</span>
+                <span class="toggle-btn" id="factor-1-btn">+</span>
+            </div>
+            <div id="factor-1" class="details-content">
+                송전 거리에 따른 전력 손실률을 계산합니다. 도심지 근접 발전소는 송전 효율이 높아 일반 발전소 대비 <b>1.2배</b> 높은 가치를 부여받습니다.
+            </div>
+        </div>
 
-        <p style="font-weight:bold; font-size:0.9em; margin-top:25px;">[글로벌 시세 현황 (KRW)]</p>
-        <table>
-            <tr><td>🇰🇷 서울</td><td>₩250 / VT</td><td>🇩🇪 베를린</td><td>₩315 / VT</td></tr>
-            <tr><td>🇺🇸 뉴욕</td><td>₩285 / VT</td><td>🇺🇸 캘리포니아</td><td>₩340 / VT</td></tr>
-        </table>
+        <div class="details-box">
+            <div class="details-header" onclick="toggleDetails('factor-2')">
+                <span>⏰ Time-of-Use (시간대별 희소성)</span>
+                <span class="toggle-btn" id="factor-2-btn">+</span>
+            </div>
+            <div id="factor-2" class="details-content">
+                에너지 수요가 폭증하는 피크 시간대(오후 2~4시) 생산 데이터는 가중치 <b>1.5배</b>를 적용합니다. 반면 공급 과잉 시간대는 가치가 하락합니다.
+            </div>
+        </div>
+
+        <div class="details-box">
+            <div class="details-header" onclick="toggleDetails('factor-3')">
+                <span>🌿 Carbon Displacement (탄소 대체 효과)</span>
+                <span class="toggle-btn" id="factor-3-btn">+</span>
+            </div>
+            <div id="factor-3" class="details-content">
+                해당 지역 전력망의 화석연료 비중이 높을수록 재생 에너지가 대체하는 탄소량이 많아져 <b>VT 단가</b>가 상승합니다. (CBAM 대응 수치)
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="corporate-section">
-    <h2 style="color:var(--corporate); border:none; text-align:center;">Enterprise Buyer Guide (B2B)</h2>
-    <p style="text-align:center; color:#555;">기업의 매출과 영업이익을 지키는 Volti 자산 관리 전략</p>
+    <h2 style="color:var(--corporate); border:none; text-align:center;">Enterprise B2B Buyer Guide</h2>
     
+    <div class="details-box" style="margin-bottom:20px;">
+        <div class="details-header" onclick="toggleDetails('corp-detail')">
+            <span>📊 기업용 매입 전략 및 상세 수치 가이드 (매출/영업이익)</span>
+            <span class="toggle-btn" id="corp-detail-btn">+</span>
+        </div>
+        <div id="corp-detail" class="details-content">
+            <b>1. 매출 대비 탄소 비용 방어</b><br>
+            탄소 국경세(CBAM) 영향권 기업은 전체 매출액의 <b>0.5~1.0%</b>를 Volti 인증 자산으로 전환하여 수출 규제 리스크를 해소할 수 있습니다.<br><br>
+            <b>2. 영업이익 보존 효과</b><br>
+            배출권 가격 상승 시 VT 사전 확보를 통해 잠재적 비용 지출을 막아, 최종 <b>영업이익률을 약 1.5%p 개선</b>하는 효과가 있습니다.
+        </div>
+    </div>
+
     <div class="corp-grid">
-        <div class="corp-item">
-            <h3>매출 방어 (CBAM)</h3>
-            <p style="font-size:0.85em;">수출 기업 필수 항목<br><b>매출액의 0.5%~1%</b> 수준의<br>VT 인증 자산 확보 권장</p>
-        </div>
-        <div class="corp-item">
-            <h3>영업이익 최적화</h3>
-            <p style="font-size:0.85em;">탄소세 비용 선제적 절감<br><b>영업이익률 1.2%p 방어</b><br>(연간 1,000 VT 단위 거래)</p>
-        </div>
-        <div class="corp-item">
-            <h3>ESG 등급 상향</h3>
-            <p style="font-size:0.85em;">공급망 탄소 중립 증빙<br><b>RE100 및 지속가능경영</b><br>표준 보고서 즉시 발행</p>
-        </div>
+        <div class="corp-item"><h3>RE100 이행</h3><p>글로벌 표준 준수</p></div>
+        <div class="corp-item"><h3>비용 절감</h3><p>탄소세 직접 대응</p></div>
+        <div class="corp-item"><h3>브랜드 가치</h3><p>ESG 등급 상향</p></div>
     </div>
 </div>
 
 <script>
+    function toggleDetails(id) {
+        const content = document.getElementById(id);
+        const btn = document.getElementById(id + '-btn');
+        if (content.style.display === "block") {
+            content.style.display = "none";
+            btn.innerText = "+";
+        } else {
+            content.style.display = "block";
+            btn.innerText = "-";
+        }
+    }
+
     function findAddress() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -122,10 +161,10 @@
         const resultDiv = document.getElementById('result');
         resultDiv.style.display = 'block';
         resultDiv.innerHTML = `
-            <h3 style="margin:0; color:#0070f3;">분석 완료</h3>
-            <p>산출 가치: <b>${data.vt} VT</b></p>
+            <h3 style="margin:0; color:#0070f3;">분석 완료 (Verified)</h3>
+            <p>인증 가치: <b>${data.vt} VT</b></p>
             <p>한화 환산 수익: <b style="color:var(--accent); font-size:1.3em;">₩${data.revenue}</b></p>
-            <small>*계절 및 지역 가중치가 모두 반영된 최종 수치입니다.</small>
+            <small>※ 본 수치는 실시간 VIX 지수와 지역 계수를 반영한 공식 결과입니다.</small>
         `;
     }
 </script>
