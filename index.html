@@ -6,7 +6,7 @@
     <title>Volti Standard - Global Dashboard</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
-        :root { --primary: #0070f3; --dark: #1a1a1a; --light: #f5f7f9; --accent: #e63946; }
+        :root { --primary: #0070f3; --dark: #1a1a1a; --light: #f5f7f9; --accent: #e63946; --corporate: #004a99; }
         body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--dark); margin: 0; }
         
         /* 실시간 한화 시세 전광판 */
@@ -14,7 +14,7 @@
         .ticker-content { display: inline-block; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        header { padding: 30px; text-align: center; background: white; border-bottom: 1px solid #ddd; }
+        header { padding: 40px; text-align: center; background: white; border-bottom: 1px solid #ddd; }
         .main-container { max-width: 1100px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -24,9 +24,11 @@
         input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
         button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 
-        .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .price-table td { padding: 12px 5px; border-bottom: 1px solid #eee; }
-        .price-val { text-align: right; font-weight: bold; }
+        /* 기업 가이드 섹션 */
+        .corporate-section { max-width: 1100px; margin: 50px auto; padding: 40px 20px; background: white; border-radius: 16px; border: 2px solid var(--corporate); }
+        .corp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .corp-item { padding: 20px; background: #f0f7ff; border-radius: 10px; text-align: center; }
+        .corp-item h3 { color: var(--corporate); font-size: 1.1em; }
     </style>
 </head>
 <body>
@@ -45,36 +47,49 @@
 <div class="main-container">
     <div class="card">
         <h2>VT 분석 및 수익 계산</h2>
-        
         <div class="guide-box">
-            <b>💡 예상 발전량(kWh) 확인 팁</b><br>
-            • 가정용(3kW): 한 달 평균 약 300~350kWh 발급<br>
-            • 고지서의 '당월 발전량' 항목을 확인하세요[cite: 26].
+            <b>💡 예상 발전량 확인</b>: 가정용(3kW)은 월 평균 약 300~350kWh입니다. 고지서를 확인해 보세요.
         </div>
-
         <input type="text" id="address" placeholder="주소 검색을 클릭하세요" readonly onclick="findAddress()">
         <button onclick="findAddress()" style="background:#666; margin-bottom:15px;">주소 검색</button>
-        
         <input type="number" id="kwh" placeholder="발전량 입력 (kWh)">
         <button onclick="calculateVT()">실시간 가치 분석 실행</button>
-        
         <div id="result" style="display:none; margin-top:20px; padding:15px; background:#eef6ff; border-radius:8px;"></div>
     </div>
 
     <div class="card">
         <h2>Global Market (KRW 기준)</h2>
-        <p style="font-size:0.85em; color:#666;">*전 세계 주요 도시의 1 VT당 평균 거래 시세입니다[cite: 120].</p>
-        <table class="price-table">
-            <tr><td>🇰🇷 대한민국 서울</td><td class="price-val">₩250</td></tr>
-            <tr><td>🇩🇪 독일 베를린</td><td class="price-val">₩315</td></tr>
-            <tr><td>🇺🇸 미국 캘리포니아</td><td class="price-val">₩340</td></tr>
-            <tr><td>🇺🇸 미국 뉴욕</td><td class="price-val">₩285</td></tr>
-            <tr><td>🇯🇵 일본 도쿄</td><td class="price-val">₩265</td></tr>
+        <p style="font-size:0.85em; color:#666;">*전 세계 주요 도시의 1 VT당 거래 시세입니다.</p>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">🇰🇷 대한민국 서울</td><td style="text-align:right; font-weight:bold;">₩250</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">🇩🇪 독일 베를린</td><td style="text-align:right; font-weight:bold;">₩315</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">🇺🇸 미국 캘리포니아</td><td style="text-align:right; font-weight:bold;">₩340</td></tr>
+            <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;">🇺🇸 미국 뉴욕</td><td style="text-align:right; font-weight:bold;">₩285</td></tr>
         </table>
-        <div style="margin-top:20px; font-size:0.85em; line-height:1.6;">
-            <b>왜 가격이 다른가요?</b><br>
-            해당 지역의 탄소 배출량(C), 전력 수요(L), 신재생 에너지 신뢰도(R)에 따라 1kWh당 생성되는 VT 가치가 다르기 때문입니다[cite: 105, 106].
+        <p style="font-size:0.8em; margin-top:20px; color:#666;">VT는 지역별 탄소 배출량(C)과 전력 수요(L)를 반영한 차세대 에너지 단위입니다.</p>
+    </div>
+</div>
+
+<div class="corporate-section">
+    <h2 style="color:var(--corporate); border:none; text-align:center;">Corporate Buyer Guide</h2>
+    <p style="text-align:center; color:#555;">RE100 및 ESG 경영을 위한 프리미엄 Volti 구매 가이드</p>
+    
+    <div class="corp-grid">
+        <div class="corp-item">
+            <h3>🌱 High-Purity</h3>
+            <p style="font-size:0.9em;">탄소 저감 효과가 입증된<br>최상위 재생 에너지만 선별</p>
         </div>
+        <div class="corp-item">
+            <h3>🔍 Real-time Tracking</h3>
+            <p style="font-size:0.9em;">생산부터 소비까지<br>모든 경로의 투명한 데이터</p>
+        </div>
+        <div class="corp-item">
+            <h3>📈 Standardized Reporting</h3>
+            <p style="font-size:0.9em;">글로벌 ESG 공시 기준에<br>부합하는 표준 문서 발행</p>
+        </div>
+    </div>
+    <div style="text-align:center; margin-top:30px;">
+        <button style="width:auto; padding:15px 40px; background:var(--corporate);">기업 구매 상담 신청 (B2B)</button>
     </div>
 </div>
 
@@ -90,7 +105,7 @@
     async function calculateVT() {
         const kwh = document.getElementById('kwh').value;
         const addr = document.getElementById('address').value;
-        if(!addr || !kwh) { alert("주소와 발전량을 입력해주세요!"); return; }
+        if(!addr || !kwh) { alert("데이터를 입력해주세요!"); return; }
 
         const response = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}`);
         const data = await response.json();
@@ -101,7 +116,6 @@
             <h3 style="margin:0; color:#0070f3;">분석 완료</h3>
             <p>인증 가치: <b>${data.vt} VT</b></p>
             <p>한화 환산 수익: <b style="color:var(--accent); font-size:1.4em;">₩${data.revenue}</b></p>
-            <small>검증 레벨: Level 1 (Self-Report) [cite: 25]</small>
         `;
     }
 </script>
