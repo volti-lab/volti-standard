@@ -3,67 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volti Standard - Global Energy Value Unit</title>
+    <title>Volti Standard - Global Dashboard</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
-        :root { --primary: #0070f3; --dark: #1a1a1a; --light: #f5f7f9; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--light); color: var(--dark); margin: 0; padding: 0; }
+        :root { --primary: #0070f3; --dark: #1a1a1a; --light: #f5f7f9; --accent: #e63946; }
+        body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--dark); margin: 0; }
         
-        /* 시세 전광판 */
-        .vix-ticker { background: var(--dark); color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; font-size: 0.9em; }
-        .ticker-content { display: inline-block; animation: ticker 30s linear infinite; }
+        /* 실시간 한화 시세 전광판 */
+        .vix-ticker { background: var(--dark); color: #00ff00; padding: 12px 0; overflow: hidden; white-space: nowrap; font-family: monospace; }
+        .ticker-content { display: inline-block; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* 헤더 & 메인 섹션 */
-        header { padding: 40px 20px; text-align: center; background: white; border-bottom: 1px solid #eaeaea; }
-        .container { max-width: 1000px; margin: 40px auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; padding: 0 20px; }
+        header { padding: 30px; text-align: center; background: white; border-bottom: 1px solid #ddd; }
+        .main-container { max-width: 1100px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         
-        .card { background: white; padding: 30px; border-radius: 16px; border: 1px solid #eaeaea; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; font-size: 1.5em; border-left: 4px solid var(--primary); padding-left: 15px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h2 { font-size: 1.3em; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
 
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #0056b3; }
+        .guide-box { background: #fffbe6; padding: 15px; border-radius: 8px; border-left: 4px solid #ffe58f; font-size: 0.9em; margin-bottom: 15px; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 
-        .price-list { list-style: none; padding: 0; }
-        .price-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #ddd; }
-        .up { color: #e63946; } .down { color: #0070f3; }
+        .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .price-table td { padding: 12px 5px; border-bottom: 1px solid #eee; }
+        .price-val { text-align: right; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="vix-ticker">
     <div class="ticker-content">
-        🌍 Volti Index (VIX): 🇰🇷 Seoul 1.22 VT/kWh (+0.02) | 🇩🇪 Berlin 1.84 VT/kWh (-0.05) | 🇺🇸 New York 1.45 VT/kWh (+0.11) | 🇯🇵 Tokyo 1.32 VT/kWh (+0.01) | 🇺🇸 California 1.95 VT/kWh (+0.08)
+        [LIVE VIX KRW] 🇰🇷 서울: ₩250 (+2.1) | 🇩🇪 베를린: ₩315 (-1.4) | 🇺🇸 뉴욕: ₩285 (+0.8) | 🇺🇸 캘리포니아: ₩340 (+5.2) | 🇯🇵 도쿄: ₩265 (+0.3) | 🇦🇺 시드니: ₩290 (-0.5)
     </div>
 </div>
 
 <header>
-    <h1>Volti Standard</h1>
-    <p>Measure what truly matters. Not all energy is equal. [cite: 95]</p>
+    <h1>Volti Global Standard</h1>
+    <p>에너지의 물리적 양(kWh)을 넘어 경제적 가치(VT)를 확인하세요.</p>
 </header>
 
-<div class="container">
+<div class="main-container">
     <div class="card">
-        <h2>VT Calculator</h2>
-        <p>에너지의 질(Quality)을 수치화하여 수익을 확인하세요. [cite: 98]</p>
-        <input type="text" id="address" placeholder="발전소 주소를 검색하세요" readonly onclick="findAddress()">
-        <input type="number" id="kwh" placeholder="예상 발전량 (kWh)">
-        <button onclick="calculateVT()">분석 시작 및 수익 산출</button>
-        <div id="result" style="display:none; margin-top:20px; padding:20px; background:#f0f7ff; border-radius:12px;"></div>
+        <h2>VT 분석 및 수익 계산</h2>
+        
+        <div class="guide-box">
+            <b>💡 예상 발전량(kWh) 확인 팁</b><br>
+            • 가정용(3kW): 한 달 평균 약 300~350kWh 발급<br>
+            • 고지서의 '당월 발전량' 항목을 확인하세요[cite: 26].
+        </div>
+
+        <input type="text" id="address" placeholder="주소 검색을 클릭하세요" readonly onclick="findAddress()">
+        <button onclick="findAddress()" style="background:#666; margin-bottom:15px;">주소 검색</button>
+        
+        <input type="number" id="kwh" placeholder="발전량 입력 (kWh)">
+        <button onclick="calculateVT()">실시간 가치 분석 실행</button>
+        
+        <div id="result" style="display:none; margin-top:20px; padding:15px; background:#eef6ff; border-radius:8px;"></div>
     </div>
 
     <div class="card">
-        <h2>Global VIX Market</h2>
-        <ul class="price-list">
-            <li class="price-item"><span>🇰🇷 Seoul, KR</span><span class="up">₩250 / VT</span></li>
-            <li class="price-item"><span>🇩🇪 Berlin, DE</span><span class="up">€0.21 / VT</span></li>
-            <li class="price-item"><span>🇺🇸 California, US</span><span class="down">$0.19 / VT</span></li>
-            <li class="price-item"><span>🇦🇺 Sydney, AU</span><span>$0.24 / VT</span></li>
-        </ul>
-        <div style="margin-top:20px; font-size:0.9em; color:#666;">
-            <p>ℹ️ <b>VT = E × L × T × C × R</b> [cite: 105]</p>
-            <p>동일한 1kWh라도 언제 어디서 만드느냐에 따라 가치는 다릅니다. [cite: 101]</p>
+        <h2>Global Market (KRW 기준)</h2>
+        <p style="font-size:0.85em; color:#666;">*전 세계 주요 도시의 1 VT당 평균 거래 시세입니다[cite: 120].</p>
+        <table class="price-table">
+            <tr><td>🇰🇷 대한민국 서울</td><td class="price-val">₩250</td></tr>
+            <tr><td>🇩🇪 독일 베를린</td><td class="price-val">₩315</td></tr>
+            <tr><td>🇺🇸 미국 캘리포니아</td><td class="price-val">₩340</td></tr>
+            <tr><td>🇺🇸 미국 뉴욕</td><td class="price-val">₩285</td></tr>
+            <tr><td>🇯🇵 일본 도쿄</td><td class="price-val">₩265</td></tr>
+        </table>
+        <div style="margin-top:20px; font-size:0.85em; line-height:1.6;">
+            <b>왜 가격이 다른가요?</b><br>
+            해당 지역의 탄소 배출량(C), 전력 수요(L), 신재생 에너지 신뢰도(R)에 따라 1kWh당 생성되는 VT 가치가 다르기 때문입니다[cite: 105, 106].
         </div>
     </div>
 </div>
@@ -80,7 +90,7 @@
     async function calculateVT() {
         const kwh = document.getElementById('kwh').value;
         const addr = document.getElementById('address').value;
-        if(!addr || !kwh) { alert("데이터를 입력해주세요!"); return; }
+        if(!addr || !kwh) { alert("주소와 발전량을 입력해주세요!"); return; }
 
         const response = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}`);
         const data = await response.json();
@@ -88,10 +98,10 @@
         const resultDiv = document.getElementById('result');
         resultDiv.style.display = 'block';
         resultDiv.innerHTML = `
-            <strong>분석 결과:</strong><br>
-            산출된 에너지 가치: <span style="font-size:1.5em; color:#0070f3;">${data.vt} VT</span><br>
-            예상 추가 수익: <span style="font-size:1.5em; color:#e63946;">₩${data.revenue}</span><br>
-            <small style="display:block; margin-top:10px;">*지역별 탄소 집약도 및 송전 효율 반영 완료 [cite: 106]</small>
+            <h3 style="margin:0; color:#0070f3;">분석 완료</h3>
+            <p>인증 가치: <b>${data.vt} VT</b></p>
+            <p>한화 환산 수익: <b style="color:var(--accent); font-size:1.4em;">₩${data.revenue}</b></p>
+            <small>검증 레벨: Level 1 (Self-Report) [cite: 25]</small>
         `;
     }
 </script>
