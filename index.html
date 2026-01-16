@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volti Standard - Global Expert Terminal</title>
+    <title>Volti Standard - Strategic Energy Terminal</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
         :root { 
             --primary: #0070f3; --dark: #0a0a0a; --green: #00ff00; --accent: #ff4d4d; 
-            --yellow-flash: #FFD700; --esg-green: #28a745; 
+            --yellow: #FFD700; --esg: #28a745; --warning: #ffa500;
         }
         body { font-family: 'Inter', sans-serif; background: #000; color: #eee; margin: 0; font-size: 13px; }
         
@@ -22,34 +22,34 @@
 
         header { background: #1a1a1a; padding: 15px 0; text-align: center; border-bottom: 1px solid #333; }
         .logo-text { font-size: 24px; font-weight: bold; color: #fff; }
-        .volti-flash { color: var(--yellow-flash); margin-right: 5px; }
+        .volti-flash { color: var(--yellow); margin-right: 5px; }
 
-        /* 메인 그리드 (상단 2개 섹션) */
+        /* 메인 그리드 */
         .terminal-grid { display: grid; grid-template-columns: 350px 1fr 320px; gap: 15px; padding: 15px; }
         .panel { background: #111; border: 1px solid #333; border-radius: 4px; padding: 15px; overflow: hidden; }
         h2 { font-size: 13px; color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 8px; margin: 0 0 12px 0; text-transform: uppercase; }
 
-        /* 법인 구매 가이드 (하단 와이드 섹션) */
+        /* 법인 시뮬레이터 (CBAM 강화) */
         .bottom-panel { grid-column: span 3; background: #111; border: 1px solid var(--primary); border-radius: 4px; padding: 20px; margin: 0 15px 15px 15px; }
         .corp-simulator { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 30px; }
 
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { text-align: left; color: #888; padding: 5px; border-bottom: 1px solid #222; }
         td { padding: 7px 5px; border-bottom: 1px solid #1a1a1a; font-family: monospace; }
-        .up { color: var(--green); } .down { color: var(--accent); }
+        .up { color: var(--green); } .down { color: var(--accent); } .warn { color: var(--warning); }
 
         input, select, button { width: 100%; padding: 10px; margin: 5px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 3px; }
         button { background: var(--primary); cursor: pointer; font-weight: bold; border: none; }
         
-        .stock-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dotted #222; }
-        .result-box { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 4px; height: 100%; }
+        .result-box { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 4px; height: 100%; position: relative; }
+        .badge { position: absolute; top: 10px; right: 10px; font-size: 10px; padding: 2px 6px; border-radius: 10px; background: var(--accent); }
     </style>
 </head>
 <body>
 
 <div class="top-utility-bar">
     <div class="vix-ticker">
-        <div class="ticker-content" id="live-ticker">[VIX LIVE] KR-SMP: ₩242.15 | Loading Market Data...</div>
+        <div class="ticker-content" id="live-ticker">[LIVE MARKET] CBAM 규제 지수 상승 중 | 제주 출력제어 위험도: HIGH | Loading...</div>
     </div>
     <div class="lang-selector">
         <span class="lang-btn active" id="btn-ko" onclick="setLang('ko')">한글</span> | 
@@ -58,90 +58,78 @@
 </div>
 
 <header>
-    <div class="logo-text"><span class="volti-flash">⚡</span>Volti Standard Platform</div>
-    <div id="txt-slogan" style="color:var(--esg-green); font-size:12px; margin-top:5px;">🌱 ESG 탄소 중립 및 에너지 가치 통합 터미널</div>
+    <div class="logo-text"><span class="volti-flash">⚡</span>Volti Strategic Terminal</div>
+    <div id="txt-slogan" style="color:var(--esg); font-size:12px; margin-top:5px;">🌱 분산에너지법 및 CBAM 대응 에너지 자산 관리 표준</div>
 </header>
 
 <main class="terminal-grid">
     <div class="panel">
-        <h2 id="h-engine">VT 분석 엔진</h2>
+        <h2 id="h-engine">VT 분석 엔진 (v.2026)</h2>
         <input type="text" id="address" placeholder="발전소 주소 검색" readonly onclick="findAddress()">
         <input type="number" id="kwh" placeholder="발전량 (kWh)">
         <select id="production-method">
-            <option value="solar">태양광 (Solar)</option>
-            <option value="wind">풍력 (Wind)</option>
-            <option value="hydro">수력 (Hydro)</option>
+            <option value="solar">태양광 (Solar) - 출력제어 리스크 적용</option>
+            <option value="wind">풍력 (Wind) - 계통 안정성 가산</option>
         </select>
-        <select id="months">
-            <option value="1">신축 설비 (1M)</option>
-            <option value="36">노후 설비 (3Y+)</option>
-        </select>
-        <button onclick="calculateVT()" id="btn-run">분석 실행</button>
-        <div id="result-display" style="display:none; margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+        <button onclick="calculateVT()" id="btn-run">전략 분석 실행</button>
+        <div id="result-display" style="display:none; margin-top:10px;">
             <div id="res-vt" style="font-size:22px; color:var(--green); font-weight:bold;">0 VT</div>
-            <div id="analysis-log" style="font-size:10px; color:#666;"></div>
+            <div id="analysis-log" style="font-size:10px; color:#aaa; margin-top:5px; line-height:1.4;"></div>
         </div>
     </div>
 
     <div class="panel">
-        <h2 id="h-factors">실시간 변동 지표 & 히스토리</h2>
+        <h2 id="h-factors">Real-time Risk & Value Factors</h2>
         <table>
-            <thead><tr><th>FACTOR</th><th>VALUE</th><th>DELTA</th></tr></thead>
+            <thead><tr><th>FACTOR</th><th>VALUE</th><th>STATUS</th></tr></thead>
             <tbody>
-                <tr><td>Grid Loss (L)</td><td id="l-val">1.250</td><td class="up">+0.002</td></tr>
-                <tr><td>Carbon Int. (C)</td><td id="c-val">1.104</td><td class="down">-0.005</td></tr>
+                <tr><td>Curtailment Risk (G)</td><td id="v-g" class="warn">High (0.85)</td><td>출력제어 주의</td></tr>
+                <tr><td>Grid Locality (L)</td><td id="v-l">1.320</td><td>분산법 가산</td></tr>
+                <tr><td>Carbon Gap (C)</td><td id="v-c">1.104</td><td>CBAM 연동</td></tr>
             </tbody>
         </table>
-        <h2 style="margin-top:15px;" id="h-history">Price History (24H)</h2>
-        <div style="height:150px; overflow-y:auto;"><table id="history-tbody"></table></div>
+        <h2 style="margin-top:15px;" id="h-history">VIX Price History</h2>
+        <div style="height:120px; overflow-y:auto;"><table id="history-tbody"></table></div>
     </div>
 
     <div class="panel">
-        <h2 id="h-global">Global Power Prices</h2>
-        <div class="stock-item"><span>K-SMP</span><span class="up">₩242.1</span></div>
-        <div class="stock-item"><span>D-EEX</span><span class="down">€125.4</span></div>
-        <h2 style="margin-top:20px;" id="h-market">Market Indicators</h2>
-        <div class="stock-item"><span>EU-ETS</span><span class="up">€64.5</span></div>
-        <div class="stock-item"><span>WTI Oil</span><span class="up">$72.4</span></div>
+        <h2 id="h-global">Global Indicators</h2>
+        <div style="padding:5px 0;"><span>EU-ETS (탄소권)</span><span class="up" style="float:right;">€64.5</span></div>
+        <div style="padding:5px 0;"><span>K-SMP (전력가)</span><span class="up" style="float:right;">₩242.1</span></div>
+        <div style="padding:5px 0; color:var(--accent);"><span>CBAM Tax Index</span><span style="float:right;">+12.4%</span></div>
     </div>
 
     <section class="bottom-panel">
-        <h2 id="h-corp" style="color:var(--yellow-flash); border-color:var(--yellow-flash);">법인 전용 구매 시뮬레이터 (Corporate Purchase Guide)</h2>
+        <h2 id="h-corp" style="color:var(--yellow); border-color:var(--yellow);">Corporate Strategy & CBAM Simulator</h2>
         <div class="corp-simulator">
             <div class="inputs">
-                <label style="font-size:11px;">1. 기업 규모 (연간 매출액 / 억원)</label>
-                <input type="number" id="corp-rev" placeholder="예: 100" oninput="runCorpSim()">
-                
-                <label style="font-size:11px; margin-top:10px; display:block;">2. 주요 수출/사업 지역 (규제 가중치)</label>
-                <select id="corp-region" onchange="runCorpSim()">
-                    <option value="1.0">국내 사업 위주 (Domestic)</option>
-                    <option value="1.5">EU 수출 (CBAM 적용)</option>
-                    <option value="1.3">미국/글로벌 (RE100 공시)</option>
+                <label style="font-size:11px;">1. 연간 수출액 (억원 / EU향 기준)</label>
+                <input type="number" id="corp-export" placeholder="예: 50" oninput="runCorpSim()">
+                <label style="font-size:11px; margin-top:10px; display:block;">2. 수출 품목 (탄소 집약도)</label>
+                <select id="corp-item-type" onchange="runCorpSim()">
+                    <option value="1.0">일반 소비재</option>
+                    <option value="2.5">철강/금속 (고탄소 CBAM)</option>
+                    <option value="1.8">화학/비료</option>
                 </select>
             </div>
             
             <div class="inputs">
-                <label style="font-size:11px;">3. 탄소 감축 목표 레벨</label>
-                <select id="corp-goal" onchange="runCorpSim()">
-                    <option value="0.1">준법 감시 레벨 (기본 10%)</option>
-                    <option value="0.5">ESG 선도 기업 (50%)</option>
-                    <option value="1.0">Net-Zero 달성 (100%)</option>
-                </select>
-                
-                <label style="font-size:11px; margin-top:10px; display:block;">4. 적용 업종</label>
-                <select id="corp-type" onchange="runCorpSim()">
-                    <option value="1.0">일반 서비스/IT</option>
-                    <option value="1.8">제조/중공업 (고탄소)</option>
-                    <option value="1.4">유통/물류</option>
+                <label style="font-size:11px;">3. 현행 재생에너지 비율 (%)</label>
+                <input type="number" id="corp-re-percent" value="5" oninput="runCorpSim()">
+                <label style="font-size:11px; margin-top:10px; display:block;">4. 2026 규제 대응 수준</label>
+                <select id="corp-reg-level" onchange="runCorpSim()">
+                    <option value="1.0">최소 대응 (관세 부과 감수)</option>
+                    <option value="2.0">전략적 Net-Zero (관세 면제 목표)</option>
                 </select>
             </div>
 
             <div class="result-box">
-                <div id="corp-txt-head" style="font-size:12px; color:#888;">권장 Volti 구매량 (Recommended Volume)</div>
-                <div id="corp-total-vt" style="font-size:32px; font-weight:bold; color:var(--primary); margin:10px 0;">0 VT</div>
-                <div id="corp-detail-log" style="font-size:11px; color:#666; line-height:1.6;">
-                    항목을 선택하면 법인 맞춤형 가이드가 출력됩니다.
-                </div>
+                <div class="badge">CBAM STRATEGY</div>
+                <div style="font-size:12px; color:#888;">예상 관세 절감액 (Saved Tax)</div>
+                <div id="corp-tax-saved" style="font-size:28px; font-weight:bold; color:var(--green); margin:5px 0;">₩0</div>
+                <div style="font-size:12px; color:#888;">권장 Volti 매입량</div>
+                <div id="corp-total-vt" style="font-size:20px; font-weight:bold; color:var(--primary);">0 VT</div>
+                <div id="corp-detail-log" style="font-size:11px; color:#666; margin-top:5px;"></div>
             </div>
         </div>
     </section>
@@ -149,16 +137,8 @@
 
 <script>
     const langData = {
-        ko: {
-            slogan: "🌱 ESG 탄소 중립 및 에너지 가치 통합 터미널",
-            hEngine: "VT 분석 엔진", hCorp: "법인 전용 구매 시뮬레이터", hFactors: "실시간 변동 지표", hHistory: "이력 (24H)", hGlobal: "글로벌 전력 단가", hMarket: "시장 지표",
-            btnRun: "분석 실행", phRev: "연간 매출액 (억원)"
-        },
-        en: {
-            slogan: "🌱 ESG Carbon Neutral & Energy Value Terminal",
-            hEngine: "VT ANALYSIS ENGINE", hCorp: "CORPORATE PURCHASE SIMULATOR", hFactors: "LIVE FACTORS", hHistory: "HISTORY (24H)", hGlobal: "GLOBAL POWER PRICES", hMarket: "MARKET INDICATORS",
-            btnRun: "RUN ANALYSIS", phRev: "ANNUAL REV (100M KRW)"
-        }
+        ko: { slogan: "🌱 분산에너지법 및 CBAM 대응 에너지 자산 관리 표준", hEngine: "VT 분석 엔진 (v.2026)", hCorp: "법인 전략 및 CBAM 시뮬레이터", hFactors: "실시간 리스크 및 가치 요인", hHistory: "이력 (24H)", hGlobal: "글로벌 지표", hMarket: "시장 지표", btnRun: "전략 분석 실행" },
+        en: { slogan: "🌱 ESG Assets & CBAM Regulatory Terminal", hEngine: "VT STRATEGIC ENGINE", hCorp: "STRATEGY & CBAM SIMULATOR", hFactors: "LIVE RISK FACTORS", hHistory: "HISTORY (24H)", hGlobal: "GLOBAL DATA", hMarket: "MARKET DATA", btnRun: "RUN ANALYSIS" }
     };
 
     function setLang(lang) {
@@ -169,59 +149,56 @@
         document.getElementById('h-factors').innerText = d.hFactors;
         document.getElementById('h-history').innerText = d.hHistory;
         document.getElementById('h-global').innerText = d.hGlobal;
-        document.getElementById('h-market').innerText = d.hMarket;
         document.getElementById('btn-run').innerText = d.btnRun;
-        document.getElementById('corp-rev').placeholder = d.phRev;
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + lang).classList.add('active');
     }
 
-    // 법인 구매량 시뮬레이션 로직
+    // CBAM 기반 법인 시뮬레이션
     function runCorpSim() {
-        const rev = document.getElementById('corp-rev').value;
-        if(!rev) return;
+        const exportAmt = document.getElementById('corp-export').value;
+        const rePct = document.getElementById('corp-re-percent').value;
+        if(!exportAmt) return;
         
-        const region = parseFloat(document.getElementById('corp-region').value);
-        const goal = parseFloat(document.getElementById('corp-goal').value);
-        const type = parseFloat(document.getElementById('corp-type').value);
+        const itemWeight = parseFloat(document.getElementById('corp-item-type').value);
+        const regLevel = parseFloat(document.getElementById('corp-reg-level').value);
         
-        // 가산 공식: 매출 1억당 기본 100VT * 지역가중치 * 목표치 * 업종가중치
-        const baseVT = rev * 100;
-        const totalVT = Math.round(baseVT * region * goal * type);
+        // 시뮬레이션 공식: 수출액 * 탄소가중치 * (100-재생에너지비율)/100 * 관세율(평균 3%)
+        const savedTax = Math.round(exportAmt * 100000000 * itemWeight * ((100-rePct)/100) * 0.03);
+        const targetVT = Math.round(savedTax / 250); // 1VT당 250원 가치 환산
         
-        document.getElementById('corp-total-vt').innerText = totalVT.toLocaleString() + " VT";
-        document.getElementById('corp-detail-log').innerHTML = `
-            • 지역 규제 가중치: x${region}<br>
-            • 탄소 목표 가중치: x${goal}<br>
-            • 업종 부하 가중치: x${type}<br>
-            <strong>* 해당 수치는 CBAM 및 ESG 공시 대응을 위한 권장량입니다.</strong>
-        `;
+        document.getElementById('corp-tax-saved').innerText = "₩" + (savedTax/1000000).toFixed(1) + "억";
+        document.getElementById('corp-total-vt').innerText = targetVT.toLocaleString() + " VT";
+        document.getElementById('corp-detail-log').innerHTML = `• 탄소 집약도 페널티: x${itemWeight}<br>• VT 확보 시 관세 리스크 ${(rePct < 50 ? '대폭' : '소폭')} 감소`;
     }
 
     function updateTerminal() {
-        const smp = (240 + Math.random()*5).toFixed(2);
-        document.getElementById('live-ticker').innerText = `[VIX LIVE] KR-SMP: ₩${smp} | EU-EEX: €125.4 | Carbon: €64.5 | BTC: $42,150 | Market Stable...`;
-        document.getElementById('l-val').innerText = (1.2 + Math.random()*0.1).toFixed(3);
+        const ticker = document.getElementById('live-ticker');
+        const gRisk = (0.7 + Math.random()*0.3).toFixed(2);
+        ticker.innerText = `[ALERT] 제주-호남 출력제어 위험지수: ${gRisk} (주의) | EU 탄소국경세 지수: 1.12 | [분산법] 지역 차등 가산점 동기화 완료 | `;
+        document.getElementById('v-g').innerText = `${gRisk < 0.8 ? 'Warning' : 'Stable'} (${gRisk})`;
+        document.getElementById('v-g').className = gRisk < 0.8 ? 'warn' : 'up';
     }
-    setInterval(updateTerminal, 1000);
+    setInterval(updateTerminal, 2000);
 
     function initHistory() {
         const tbody = document.getElementById('history-tbody');
-        for(let i=0; i<10; i++) {
-            tbody.innerHTML += `<tr><td>${23-i}:00</td><td>${(1.2+Math.random()*0.1).toFixed(4)}</td><td>${(230+Math.random()*10).toFixed(1)}</td></tr>`;
+        for(let i=0; i<8; i++) {
+            tbody.innerHTML += `<tr><td>${23-i}:00</td><td>${(1.2+Math.random()*0.1).toFixed(4)}</td><td class="up">+0.001</td></tr>`;
         }
     }
     initHistory();
     function findAddress() { new daum.Postcode({ oncomplete: d => document.getElementById('address').value = d.address }).open(); }
+    
     async function calculateVT() {
         const kwh = document.getElementById('kwh').value;
         const addr = document.getElementById('address').value;
         if(!addr || !kwh) return alert("DATA REQUIRED");
-        const res = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}&months=${document.getElementById('months').value}&method=${document.getElementById('production-method').value}`);
+        const res = await fetch(`/api/calculate?kwh=${kwh}&addr=${addr}&method=${document.getElementById('production-method').value}`);
         const data = await res.json();
         document.getElementById('result-display').style.display = 'block';
         document.getElementById('res-vt').innerText = data.vt + " VT";
-        document.getElementById('analysis-log').innerText = `ENGINE LOG: L=${data.log.L}, C=${data.log.C}, AGE=${data.log.Age}`;
+        document.getElementById('analysis-log').innerHTML = `<strong>[ENGINE LOG]</strong><br>• 지역 상생 지수(L): ${data.log.L} (분산법 적용)<br>• 계통 안정성(G): 0.88<br>• 탄소 가치(C): ${data.log.C}`;
     }
     setLang('ko');
 </script>
