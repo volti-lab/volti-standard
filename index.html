@@ -3,91 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volti Standard - Global Strategic Terminal (Master)</title>
+    <title>Volti Standard - Global Expert Terminal (Integrated)</title>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
         :root { 
-            --primary: #FFD700; /* 메인 번개색 (Yellow Flash) */
+            --primary: #FFD700; /* 메인 번개색 */
             --dark: #050505; 
             --bg-panel: #0f0f0f;
-            --green: #00ff00; /* 상승(Up) */
-            --blue: #0070f3;  /* 하락(Down) - 파랑 */
-            --accent: #ff4d4d; /* 경고 */
+            --green: #00ff00; /* 상승 */
+            --blue: #0070f3;  /* 하락 */
+            --accent: #ff4d4d;
             --esg: #28a745;
         }
-        body { font-family: 'Inter', sans-serif; background: #000; color: #eee; margin: 0; font-size: 13px; }
+        body { font-family: 'Inter', sans-serif; background: #000; color: #eee; margin: 0; font-size: 13px; transition: 0.3s; }
         
-        /* [1] 상단 티커 바 */
-        .vix-ticker { background: var(--dark); color: var(--green); padding: 12px 0; overflow: hidden; white-space: nowrap; font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid #222; }
-        .ticker-content { display: inline-block; animation: ticker 60s linear infinite; }
+        /* [1] 상단 바 (티커 + 언어 선택) */
+        .top-utility-bar { display: flex; background: var(--dark); border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; align-items: center; }
+        .vix-ticker { flex: 1; color: var(--green); padding: 12px 0; overflow: hidden; white-space: nowrap; font-family: 'JetBrains Mono', monospace; border-right: 1px solid #333; }
+        .ticker-content { display: inline-block; animation: ticker 50s linear infinite; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        .lang-selector { padding: 0 15px; display: flex; gap: 10px; font-size: 11px; font-weight: bold; }
+        .lang-btn { cursor: pointer; color: #666; transition: 0.2s; }
+        .lang-btn.active { color: var(--primary); text-decoration: underline; }
 
-        /* [2] 헤더 & 로고 */
+        /* [2] 헤더 */
         header { background: #111; padding: 20px 0; text-align: center; border-bottom: 2px solid var(--primary); }
         .logo { font-size: 26px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
-        .slogan { font-size: 11px; color: #888; margin-top: 5px; letter-spacing: 1px; }
+        .slogan { font-size: 11px; color: var(--esg); margin-top: 5px; }
 
-        /* [3] 메인 터미널 그리드 */
+        /* [3] 레이아웃 그리드 */
         .terminal-grid { display: grid; grid-template-columns: 340px 1fr 340px; gap: 15px; padding: 15px; }
         .panel { background: var(--bg-panel); border: 1px solid #222; border-radius: 4px; padding: 15px; position: relative; }
         h2 { font-size: 12px; color: var(--primary); border-bottom: 1px solid #333; padding-bottom: 8px; margin: 0 0 15px 0; display: flex; justify-content: space-between; }
 
-        /* [4] 변동 추이 (주식형 +/-) */
+        /* [4] 주식형 실시간 변동 지표 */
         .price-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
         .trend-group { display: flex; gap: 8px; font-size: 10px; font-family: monospace; }
         .plus { color: var(--green); }
         .minus { color: var(--blue); }
 
-        /* [5] 게시판 및 팝업 */
-        .order-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 11px; border-bottom: 1px solid #151515; }
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; height: 85%; background: #0a0a0a; border: 1px solid var(--primary); z-index: 2000; padding: 30px; }
-
-        /* [6] 입력 필드 */
+        /* [5] 게시판 및 입력 */
         input, select, button { width: 100%; padding: 12px; margin: 5px 0; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 2px; }
         button { background: var(--primary); color: #000; font-weight: 800; border: none; cursor: pointer; }
         .info-btn { width: 18px; height: 18px; border-radius: 50%; background: #333; color: var(--primary); border: 1px solid var(--primary); font-size: 10px; cursor: pointer; }
 
-        /* [7] 하단 법인 섹션 */
+        /* [6] 하단 법인 시뮬레이터 */
         .bottom-panel { grid-column: span 3; background: #0a0a0a; border: 1px solid #333; border-radius: 4px; padding: 25px; margin: 0 15px 15px 15px; }
         .corp-sim-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 40px; }
+
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; height: 85%; background: #0a0a0a; border: 1px solid var(--primary); z-index: 2000; padding: 30px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
 <div id="board-modal" class="modal">
-    <button onclick="toggleBoard()" style="width:auto; float:right; background:var(--accent); color:white;">CLOSE ×</button>
-    <h1 style="color:var(--primary);">VOLTI REAL-TIME EXCHANGE BOARD</h1>
+    <button onclick="toggleBoard()" style="width:auto; float:right; background:var(--accent); color:white; padding:5px 15px;">CLOSE ×</button>
+    <h1 id="modal-title" style="color:var(--primary);">VOLTI REAL-TIME EXCHANGE BOARD</h1>
     <table style="width:100%; text-align:left; border-collapse: collapse;">
         <thead><tr style="color:#555;"><th>TYPE</th><th>VOL(VT)</th><th>PRICE</th><th>STATUS</th><th>TIME</th></tr></thead>
         <tbody id="full-board"></tbody>
     </table>
 </div>
 
-<div class="vix-ticker">
-    <div class="ticker-content" id="live-ticker">CONNECTING GLOBAL ENERGY STREAM...</div>
+<div class="top-utility-bar">
+    <div class="vix-ticker">
+        <div class="ticker-content" id="live-ticker">CONNECTING GLOBAL ENERGY STREAM...</div>
+    </div>
+    <div class="lang-selector">
+        <span class="lang-btn active" id="btn-ko" onclick="setLang('ko')">한글</span> | 
+        <span class="lang-btn" id="btn-en" onclick="setLang('en')">English</span>
+    </div>
 </div>
 
 <header>
     <div class="logo">⚡ VOLTI STANDARD TERMINAL</div>
-    <div class="slogan">Global Energy Value Asset Management & ESG Compliance</div>
+    <div class="slogan" id="txt-slogan">🌱 Global Energy Value Asset Management & ESG Compliance</div>
 </header>
 
 <main class="terminal-grid">
     <div class="panel">
-        <h2>VT QUANT ENGINE <button class="info-btn" onclick="showHelp('e1')">+</button></h2>
+        <h2 id="h-engine">VT 분석 엔진 <button class="info-btn" onclick="showHelp('e1')">+</button></h2>
         <div id="e1" style="display:none; font-size:11px; color:#888; margin-bottom:10px;">RE100/CBAM 기준 에너지 가치 정밀 산출 엔진</div>
-        
-        <input type="text" id="address" placeholder="발전소 주소 (주소 찾기 클릭)" readonly onclick="findAddress()">
-        <button onclick="findAddress()" style="background:#222; color:#fff; border:1px solid #444;">주소 찾기</button>
+        <input type="text" id="address" placeholder="발전소 주소 검색" readonly onclick="findAddress()">
         <input type="number" id="kwh" placeholder="발전량 (kWh)">
-        
         <select id="method">
             <option value="solar">Solar (태양광)</option>
             <option value="wind">풍력 (Wind)</option>
             <option value="hydro">수력 (Hydro)</option>
         </select>
-        <button onclick="calculateVT()">RUN ANALYSIS</button>
-        
+        <button onclick="calculateVT()" id="btn-run">분석 실행</button>
         <div id="result-area" style="display:none; margin-top:20px; border:1px solid var(--primary); padding:15px;">
             <div style="font-size:11px; color:#555;">CERTIFIED VALUE</div>
             <div id="res-vt" style="font-size:28px; color:var(--green); font-weight:bold;">0 VT</div>
@@ -95,8 +100,7 @@
     </div>
 
     <div class="panel">
-        <h2>LIVE PRICE & TREND <button class="info-btn" onclick="toggleBoard()">+</button></h2>
-        
+        <h2 id="h-live">실시간 변동 지표 <button class="info-btn" onclick="toggleBoard()">+</button></h2>
         <div class="price-row">
             <div><strong>K-SMP Index</strong><br><span style="font-size:18px;" id="main-smp">₩242.1</span></div>
             <div class="trend-group">
@@ -105,7 +109,6 @@
                 <div class="plus">1M: +4.2%</div>
             </div>
         </div>
-
         <div class="price-row">
             <div><strong>VIX Value</strong><br><span style="font-size:18px;" id="main-vix">1.2540</span></div>
             <div class="trend-group">
@@ -114,7 +117,6 @@
                 <div class="plus">1M: +2.10%</div>
             </div>
         </div>
-
         <h2 style="margin-top:20px;">MINI ORDER BOOK (LIVE)</h2>
         <div id="order-mini">
             <div class="order-row"><span class="minus">BUY</span><span>1,200 VT</span><span>₩252.1</span></div>
@@ -123,29 +125,28 @@
     </div>
 
     <div class="panel">
-        <h2>RISK FACTORS <button class="info-btn" onclick="showHelp('r1')">+</button></h2>
-        <div id="r1" style="display:none; font-size:11px; color:#888; margin-bottom:10px;">Grid Loss, Curtailment, Carbon Intensity indices.</div>
-        
+        <h2 id="h-risk">리스크 요인 <button class="info-btn" onclick="showHelp('r1')">+</button></h2>
+        <div id="r1" style="display:none; font-size:11px; color:#888; margin-bottom:10px;">Grid Loss, Curtailment, Carbon Intensity.</div>
         <div class="price-row"><span>Grid Locality (L)</span><span class="plus">1.320</span></div>
         <div class="price-row"><span>Curtailment (G)</span><span class="plus">0.880</span></div>
-        
-        <h2 style="margin-top:20px;">RE100 ELIGIBILITY <button class="info-btn" onclick="showHelp('r2')">+</button></h2>
+        <h2 style="margin-top:20px;" id="h-re100">RE100 인증 기준 <button class="info-btn" onclick="showHelp('r2')">+</button></h2>
         <div id="r2" style="display:none; font-size:11px; color:#888;">글로벌 표준에 따른 재생에너지 인정 기준</div>
         <div style="font-size:11px; line-height:1.6; color:#aaa;">
-            • Solar/Wind: Grade A+ (추가성 확보)<br>
-            • Small Hydro: Grade B (지속가능성 확인)<br>
-            • Biogas: Grade C (탄소중립 증빙 필요)
+            • Solar/Wind: Grade A+<br>• Small Hydro: Grade B<br>• Biogas: Grade C
         </div>
     </div>
 
     <section class="bottom-panel">
-        <h2 style="color:var(--primary); border-color:var(--primary);">CORPORATE STRATEGY & CBAM SAVED-VALUE</h2>
+        <h2 id="h-corp" style="color:var(--primary); border-color:var(--primary);">법인 구매 전략 & CBAM 예상 절감액</h2>
         <div class="corp-sim-grid">
             <div>
-                <label>연간 수출 규모 (억원)</label>
+                <label id="lbl-exp">연간 수출 규모 (억원)</label>
                 <input type="number" id="corp-exp" oninput="runCorp()">
-                <label style="margin-top:10px; display:block;">사업 지역</label>
-                <select id="corp-reg"><option value="1.5">EU (CBAM)</option><option value="1.2">US (RE100)</option></select>
+                <label style="margin-top:10px; display:block;" id="lbl-reg">사업 지역</label>
+                <select id="corp-reg" onchange="runCorp()">
+                    <option value="1.5">EU (CBAM)</option>
+                    <option value="1.2">US (RE100)</option>
+                </select>
             </div>
             <div id="corp-result" style="background:#151515; padding:20px; border-radius:4px; display:flex; flex-direction:column; justify-content:center;">
                 <div style="font-size:11px; color:#888;">TAX AVOIDANCE</div>
@@ -154,14 +155,50 @@
                 <div id="vt-val" style="font-size:20px; color:var(--primary);">0 VT</div>
             </div>
             <div>
-                <button style="height:100%; font-size:16px;">인증서 일괄 매입 요청 (B2B)</button>
+                <button style="height:100%; font-size:16px;" id="btn-b2b">인증서 일괄 매입 요청 (B2B)</button>
             </div>
         </div>
     </section>
 </main>
 
 <script>
-    // [1] 실시간 티커 및 가격 변동 시뮬레이션
+    const langData = {
+        ko: {
+            slogan: "🌱 글로벌 에너지 가치 자산 관리 및 ESG 컴플라이언스",
+            hEngine: "VT 분석 엔진", hLive: "실시간 변동 지표", hRisk: "리스크 요인", hRe100: "RE100 인증 기준",
+            hCorp: "법인 구매 전략 & CBAM 예상 절감액", btnRun: "분석 실행", btnB2b: "인증서 일괄 매입 요청 (B2B)",
+            lblExp: "연간 수출 규모 (억원)", lblReg: "사업 지역", phAddr: "발전소 주소 검색", phKwh: "발전량 (kWh)",
+            modalTitle: "VOLTI 실시간 거래 게시판"
+        },
+        en: {
+            slogan: "🌱 Global Energy Value Asset Management & ESG Compliance",
+            hEngine: "VT QUANT ENGINE", hLive: "LIVE PRICE & TREND", hRisk: "RISK FACTORS", hRe100: "RE100 ELIGIBILITY",
+            hCorp: "CORPORATE STRATEGY & CBAM SAVED-VALUE", btnRun: "RUN ANALYSIS", btnB2b: "Request B2B Bulk Purchase",
+            lblExp: "Annual Export (100M KRW)", lblReg: "Business Region", phAddr: "Search Location", phKwh: "Gen. Power (kWh)",
+            modalTitle: "VOLTI REAL-TIME EXCHANGE BOARD"
+        }
+    };
+
+    function setLang(lang) {
+        const d = langData[lang];
+        document.getElementById('txt-slogan').innerText = d.slogan;
+        document.getElementById('h-engine').firstChild.textContent = d.hEngine + " ";
+        document.getElementById('h-live').firstChild.textContent = d.hLive + " ";
+        document.getElementById('h-risk').firstChild.textContent = d.hRisk + " ";
+        document.getElementById('h-re100').firstChild.textContent = d.hRe100 + " ";
+        document.getElementById('h-corp').innerText = d.hCorp;
+        document.getElementById('btn-run').innerText = d.btnRun;
+        document.getElementById('btn-b2b').innerText = d.btnB2b;
+        document.getElementById('lbl-exp').innerText = d.lblExp;
+        document.getElementById('lbl-reg').innerText = d.lblReg;
+        document.getElementById('address').placeholder = d.phAddr;
+        document.getElementById('kwh').placeholder = d.phKwh;
+        document.getElementById('modal-title').innerText = d.modalTitle;
+
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + lang).classList.add('active');
+    }
+
     function updateLive() {
         const smp = (240 + Math.random()*5).toFixed(1);
         document.getElementById('live-ticker').innerText = `[LIVE] SMP ₩${smp} | VIX 1.254 | EU-ETS €64.5 | KRW/USD 1,324.5 | MARKET STABLE...`;
@@ -169,18 +206,15 @@
     }
     setInterval(updateLive, 2000);
 
-    // [2] 도움말 툴팁 토글
     function showHelp(id) {
         const el = document.getElementById(id);
         el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
-    // [3] 거래 게시판 팝업
     function toggleBoard() {
         const m = document.getElementById('board-modal');
         const isShow = m.style.display === 'block';
         m.style.display = isShow ? 'none' : 'block';
-        
         if(!isShow) {
             const b = document.getElementById('full-board');
             b.innerHTML = '';
@@ -198,7 +232,6 @@
         }
     }
 
-    // [4] 가치 분석 및 법인 시뮬레이션
     function runCorp() {
         const exp = document.getElementById('corp-exp').value;
         if(!exp) return;
@@ -215,6 +248,8 @@
         document.getElementById('result-area').style.display = 'block';
         document.getElementById('res-vt').innerText = Math.floor(kwh * 1.6) + " VT";
     }
+
+    setLang('ko');
 </script>
 </body>
 </html>
