@@ -51,6 +51,22 @@ class handler(BaseHTTPRequestHandler):
                 "location_factor": L,
                 "solar_factor": R,
                 "formula": "E * L * T * C * R"
+                # ... 기존 계산 로직 아래에 추가 ...
+        
+        # 1 VT당 예상 가격 (예: 250원) [cite: 123]
+        vix_price = 250 
+        estimated_revenue = round(result_vt * vix_price, 0)
+
+        response_data = {
+            "vt": round(result_vt, 2),
+            "address": addr,
+            "revenue": format(int(estimated_revenue), ','), # 천 단위 콤마
+            "details": {
+                "location_factor": L,
+                "solar_factor": R,
+                "vix_price": vix_price
+            }
+        }
             }
         }
         self.wfile.write(json.dumps(response_data).encode('utf-8'))

@@ -45,7 +45,22 @@
             
             const resultDiv = document.getElementById('result');
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `📍 <b>${addr}</b>의 가치<br>파이썬 엔진 계산 결과: 약 <b>${data.vt} VT</b>`;}
+            resultDiv.innerHTML = `📍 <b>${addr}</b>의 가치<br>파이썬 엔진 계산 결과: 약 <b>${data.vt} VT</b>`;
+        // ... 결과 표시 부분 수정 ...
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <div style="border-bottom: 1px solid #ddd; margin-bottom: 10px; padding-bottom: 10px;">
+                📍 <b>${data.address}</b> 발전소
+            </div>
+            <div style="font-size: 1.2em;">
+                인증 가치: <b>${data.vt} VT</b>
+            </div>
+            <div style="font-size: 1.5em; color: #e63946; margin-top: 10px;">
+                예상 추가 수익: <b>₩${data.revenue}</b>
+            </div>
+            <p style="font-size: 0.8em; color: #666;">*Volti Index(VIX) 기준 예상치입니다.</p>
+        `;}
     </script>
 </body>
 </html>
